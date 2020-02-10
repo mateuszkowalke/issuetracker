@@ -29,14 +29,12 @@ suite('Functional Tests', function() {
         })
         .end(function(err, res){
           assert.equal(res.status, 200);
-          assert.equal(res.body, {
-            issue_title: 'Title',
-            issue_text: 'text',
-            created_by: 'Functional Test - Every field filled in',
-            assigned_to: 'Chai and Mocha',
-            status_text: 'In QA',
-            open: true
-          });
+          assert.equal(res.body.issue_title, "Title");
+          assert.equal(res.body.issue_text, "text");
+          assert.equal(res.body.created_by, "Functional Test - Every field filled in");
+          assert.equal(res.body.assigned_to, "Chai and Mocha");
+          assert.equal(res.body.status_text, "In QA");
+          assert.equal(res.body.open, true);
           assert.equal(true, ["created_on", "updated_on", "_id"].every((item) => Object.getOwnPropertyNames(res.body).includes(item)));
           done();
         });
@@ -52,11 +50,9 @@ suite('Functional Tests', function() {
         })
         .end(function(err, res){
           assert.equal(res.status, 200);
-          assert.equal(res.body, {
-            issue_title: 'Title',
-            issue_text: 'text',
-            created_by: 'Functional Test - Every field filled in'
-          });
+          assert.equal(res.body.issue_title, "Title");
+          assert.equal(res.body.issue_text, "text");
+          assert.equal(res.body.created_by, "Functional Test - Every field filled in");
           done();
         });
       });
@@ -70,9 +66,7 @@ suite('Functional Tests', function() {
         })
         .end(function(err, res){
           assert.equal(res.status, 200);
-          assert.equal(res.body, {
-            error: "required field not filled in"
-          });
+          assert.equal(res.body.error, "required field not filled in");
           done();
         });
       });
