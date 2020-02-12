@@ -42,14 +42,17 @@ module.exports = function (app) {
   app.route('/api/issues/:project')
   
     .get(function (req, res){
-      var project = req.body;
-      
+      PROJECT.find(req.body, (err, docs) => {
+        if (err) return console.log(err);
+        res.send(docs);
+      })
     })
     
     .post(function (req, res){
       if (!(["issue_title", "issue_text", "created_by"].every((item) => Object.getOwnPropertyNames(req.body).includes(item)))) return res.json({error: "required field not filled in"});
+      const id = req.body.hasOwnProperty("_id") ? req.body._id : ObjectId();
       const newEntry = new PROJECT({
-        _id: new ObjectId,
+        _id: id,
         issue_title: req.body.issue_title,
         issue_text: req.body.issue_text,
         created_by: req.body.created_by,
@@ -74,13 +77,28 @@ module.exports = function (app) {
     })
     
     .put(function (req, res){
-      var project = req.params.project;
-      
+      if (!req.body.hasOwnProperty("_id")) return res.send("no updated field sent");
+      const toUpdate = PROJECT.findById(req.body._id, (err, doc) => {
+        if (err) return console.log(err);
+        if (!doc) return res.send("could not update " + req.body._id);
+        for (let param in req.body) {
+          doc[param] = req.body[param];
+        }
+        doc.updated_on = new Date();
+        doc.save((err, data) => err ? console.log(err) : data);
+        res.send("successfully updated");
+      });
+      if (!toUpdate) res.send("no updated field sent");
     })
     
     .delete(function (req, res){
-      var project = req.params.project;
-      
+      if (!req.body.hasOwnProperty("_id")) return res.send("_id error");
+      const toDelete = PROJECT.findById(req.body._id, (err, doc) => {
+        if (err) return console.log(err);
+        if (!doc) return res.send("could not delete " + req.body._id);
+        PROJECT.deleteOne({_id: req.body._id}, (err, data) => err ? console.log(err) : data);
+        res.send("deleted " + req.body._id);
+      });
     });
     
 };
